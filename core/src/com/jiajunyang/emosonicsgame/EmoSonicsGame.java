@@ -65,7 +65,7 @@ public class EmoSonicsGame extends ApplicationAdapter {
 		position = new Vector2(50, 50);
 
 
-//		welcomeWord = new Texture("playCanvas.png");
+
 		gameState = 0;
 
 		font = new BitmapFont();
@@ -104,11 +104,17 @@ public class EmoSonicsGame extends ApplicationAdapter {
 	}
 
 	// Move element one up for the fading effect.
-	public void shiftArray(int x, int y ){
+	public void updatePaws(int x, int y ){
 		for (int i = numPaws - 1 ; i > 0; i--){
 			Gdx.app.log("Debug: ", Integer.toString(i));
 			catpawX[i] = catpawX[i - 1];
 			catpawY[i] = catpawY[i - 1];
+		}
+		catpawX[0] = x - catpaw.getWidth() / 2;
+		catpawY[0] = Gdx.graphics.getHeight() - y - catpaw.getHeight() / 2;
+		catIdx++;
+		if (catIdx == numPaws) {
+			catIdx = 0;
 		}
 	}
 
@@ -126,18 +132,12 @@ public class EmoSonicsGame extends ApplicationAdapter {
 			if (Gdx.input.justTouched()){
 				gameState = 1;
 			}
-
 		}
 		else if (gameState == 1) {
-			if (Gdx.input.justTouched()) {
-				shiftArray(Gdx.input.getX(), Gdx.input.getY());
+			// Draw playcanvas first.
 
-				catpawX[0] = Gdx.input.getX() - catpaw.getWidth() / 2;
-				catpawY[0] = Gdx.graphics.getHeight() - Gdx.input.getY() - catpaw.getHeight() / 2;
-				catIdx++;
-				if (catIdx == numPaws) {
-					catIdx = 0;
-				}
+			if (Gdx.input.justTouched()) {
+				updatePaws(Gdx.input.getX(), Gdx.input.getY());
 			}
 			for (int i = 0; i < numPaws; i++) {
 				catpawSprite.setPosition(catpawX[i], catpawY[i]);
@@ -147,5 +147,4 @@ public class EmoSonicsGame extends ApplicationAdapter {
 
 		batch.end();
 	}
-
 }
