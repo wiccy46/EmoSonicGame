@@ -1,6 +1,7 @@
 package com.jiajunyang.emosonicsgame;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -11,11 +12,15 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
-public class EmoSonicsGame extends ApplicationAdapter {
+//public class EmoSonicsGame extends ApplicationAdapter {
+public class EmoSonicsGame extends Game {
 	int scWidth, scHeight;
 	private SpriteBatch batch; // This is in the render.
 
@@ -44,18 +49,29 @@ public class EmoSonicsGame extends ApplicationAdapter {
 
 	int gameState = 0; // 0: welcome, 1: play 2: result.
 
+	// Creating the front page.
+	Stage stage;
+	Label label;
+	Label.LabelStyle labelStyle;
+
 	// For button.
 	TextureAtlas buttonAtlas;
 	TextButton.TextButtonStyle buttonStyle;
-	TextButton button;
+	TextButton button, sendIPButton;
 	Skin skin;
 	BitmapFont font;
 	int catIdx = 0;
 
-	// InputProcessor is a userful thing if you want full access.
+	Game game; // Menu has to go through game
+
+
+
+
 
 	@Override
 	public void create () {
+
+
 		batch = new SpriteBatch();
 		scWidth = Gdx.graphics.getWidth();
 		scHeight = Gdx.graphics.getHeight();
@@ -75,23 +91,58 @@ public class EmoSonicsGame extends ApplicationAdapter {
 
 		position = new Vector2(50, 50);
 
-
+		font = new BitmapFont();
+		font.setColor(Color.BLACK);
+		font.getData().setScale(5);
 
 		gameState = 0;
+		stage = new Stage();
+		labelStyle =  new Label.LabelStyle(font, Color.BLACK);
+		label = new Label("Welcome to EmoSonics", labelStyle);
+		label.setPosition(scWidth/2  - label.getWidth()/2, scHeight - 200);
 
-		font = new BitmapFont();
-		font.setColor(Color.WHITE);
-		font.getData().setScale(10);
+		stage.addActor(label);
+
+
 
 		skin = new Skin();
 		buttonAtlas = new TextureAtlas("buttons/button1.txt");
 		skin.addRegions(buttonAtlas); // You need to do that.
 		buttonStyle = new TextButton.TextButtonStyle();
 		buttonStyle.up = skin.getDrawable("button");
-		buttonStyle.over = skin.getDrawable("buttonpressed");
+		buttonStyle.over = skin.getDrawable("buttonpressed"); // over is not necessary for android.
 		buttonStyle.down = skin.getDrawable("buttonpressed");
 		buttonStyle.font = font;
 		button = new TextButton("start", buttonStyle);
+		sendIPButton = new TextButton("Set IP", buttonStyle);
+		button.setPosition(50, 50);
+		sendIPButton.setPosition(500,500);
+		stage.addActor(button);
+		stage.addActor(sendIPButton);
+
+		Gdx.input.setInputProcessor(stage);
+		Gdx.input.setInputProcessor(stage);
+
+		// Input listener
+		button.addListener(new InputListener(){
+			@Override
+			public boolean touchDown (InputEvent event, float x, float y,
+			int pointer, int button){
+				System.out.println("Clicked");
+				gameState = 1;
+				return true;
+			}
+		});
+
+		sendIPButton.addListener(new InputListener(){
+			@Override
+			public boolean touchDown (InputEvent event, float x, float y,
+									  int pointer, int button){
+				myIP = "192.168.11.94";
+				System.out.println(myIP);
+				return true;
+			}
+		});
 
 		// Init catpaw pos
 		float temp = 1.f;
@@ -130,17 +181,22 @@ public class EmoSonicsGame extends ApplicationAdapter {
 
 	@Override
 	public void render (){
+		Gdx.gl.glClearColor(1,1,1,1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
 		batch.begin();
-		batch.draw(welcomePage, 0, 0, scWidth, scHeight );
+		stage.act();
+
+//		batch.draw(welcomePage, 0, 0, scWidth, scHeight );
+
+
 //		batch.draw(mario, position.x, position.y);
 
 		if (gameState == 0){
-			batch.draw(welcomePage, 0, 0, scWidth, scHeight );
-			batch.draw(welcomeWord, scWidth/2 - welcomeWord.getWidth()/2, scHeight - 200 );
+//			batch.draw(welcomePage, 0, 0, scWidth, scHeight );
+
 			// Touch to start the game.
-			if (Gdx.input.justTouched()){
-				gameState = 1;
-			}
+
 		}
 		else if (gameState == 1) {
 			// Draw playcanvas first.
@@ -156,6 +212,9 @@ public class EmoSonicsGame extends ApplicationAdapter {
 			}
 		}
 
+		stage.draw();
+
+//		batch.draw(welcomePage, 0, 0, scWidth, scHeight );
 		batch.end();
 	}
 }
