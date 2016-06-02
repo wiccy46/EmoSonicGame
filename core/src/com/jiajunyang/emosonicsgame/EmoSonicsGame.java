@@ -18,12 +18,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 public class EmoSonicsGame extends ApplicationAdapter {
 	int scWidth, scHeight;
 	private SpriteBatch batch; // This is in the render.
-	private OrthographicCamera camera;
+
 	private Sprite catpawSprite; // Add chacrecteristic to the texture.
+	private Sprite playcanvasSprite;
 
 	// For the welcome page
 	private Texture welcomePage;
 	private Texture welcomeWord;
+	private Texture playCanvas;
 	private Texture mario;
 	private Texture catpaw;
 
@@ -59,9 +61,18 @@ public class EmoSonicsGame extends ApplicationAdapter {
 		scHeight = Gdx.graphics.getHeight();
 		welcomePage = new Texture("welcomePage.png");
 		welcomeWord = new Texture("welcomeWord.png");
+		playCanvas = new Texture("playCanvas.png");
 		mario = new Texture("mario.png");
 		catpaw = new Texture("touch/catpaw.png");
 		catpawSprite = new Sprite(catpaw);
+
+		// Center the playcanvas with the dimension = scHeight * scHeight.
+		playcanvasSprite = new Sprite(playCanvas);
+		playcanvasSprite.setSize(scHeight, scHeight);
+		playcanvasSprite.setPosition(scWidth/2 - scHeight/2, 0);
+
+
+
 		position = new Vector2(50, 50);
 
 
@@ -88,10 +99,9 @@ public class EmoSonicsGame extends ApplicationAdapter {
 			catpawAlpha[i] = temp ;
 			temp -= 0.2f;
 			for(int j = 0; j < 2; j ++){
-				catpawX[i] = -50f;
-				catpawY[i] = -50f;
+				catpawX[i] = -250f; // Move it out of the screen first.
+				catpawY[i] = -250f;
 			}
-
 		}
 		// -------------------
 
@@ -106,7 +116,6 @@ public class EmoSonicsGame extends ApplicationAdapter {
 	// Move element one up for the fading effect.
 	public void updatePaws(int x, int y ){
 		for (int i = numPaws - 1 ; i > 0; i--){
-			Gdx.app.log("Debug: ", Integer.toString(i));
 			catpawX[i] = catpawX[i - 1];
 			catpawY[i] = catpawY[i - 1];
 		}
@@ -123,7 +132,7 @@ public class EmoSonicsGame extends ApplicationAdapter {
 	public void render (){
 		batch.begin();
 		batch.draw(welcomePage, 0, 0, scWidth, scHeight );
-		batch.draw(mario, position.x, position.y);
+//		batch.draw(mario, position.x, position.y);
 
 		if (gameState == 0){
 			batch.draw(welcomePage, 0, 0, scWidth, scHeight );
@@ -135,12 +144,14 @@ public class EmoSonicsGame extends ApplicationAdapter {
 		}
 		else if (gameState == 1) {
 			// Draw playcanvas first.
-
+//			batch.draw(playCanvas, scWidth/2 - playCanvas.getWidth()/2, scHeight/2 - playCanvas.getHeight()/2);
+			playcanvasSprite.draw(batch);
 			if (Gdx.input.justTouched()) {
 				updatePaws(Gdx.input.getX(), Gdx.input.getY());
 			}
 			for (int i = 0; i < numPaws; i++) {
 				catpawSprite.setPosition(catpawX[i], catpawY[i]);
+
 				catpawSprite.draw(batch, catpawAlpha[i]);
 			}
 		}
