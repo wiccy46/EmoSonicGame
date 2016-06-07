@@ -72,10 +72,10 @@ public class MainMenu implements Screen {
         buttonStyle.over = skin.getDrawable("buttonpressed"); // over is not necessary for android.
         buttonStyle.down = skin.getDrawable("buttonpressed");
         buttonStyle.font = font;
-        button = new TextButton("play", buttonStyle);
+        button = new TextButton("begin", buttonStyle);
         sendIPButton = new TextButton("Set IP", buttonStyle);
-        button.setPosition(scWidth/2 - button.getWidth()/2, 20);
-        sendIPButton.setPosition(scWidth - sendIPButton.getWidth()- 20,500);
+        button.setPosition(50, 20);
+        sendIPButton.setPosition(50,500);
         stage.addActor(button);
         stage.addActor(sendIPButton);
 

@@ -3,14 +3,22 @@ package com.jiajunyang.emosonicsgame;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,20 +28,26 @@ import java.util.Iterator;
  */
 public class PlayScreen implements Screen {
     int scWidth, scHeight;
+
+    Stage stage;
+    Skin skin;
+    BitmapFont font;
     private SpriteBatch batch; // This is in the render.
 
     private Sprite catpawSprite; // Add chacrecteristic to the texture.
-    private Sprite playcanvasSprite;
+
     private Sprite marioSprite;
 
     // For the welcome page
-    private Texture welcomePage;
-    private Texture playCanvas;
+
     private Texture mario;
     ArrayList<Tile> tiles;
     Iterator<Tile> tileIterator;
+
     ArrayList<Badge> badges;
     Iterator<Badge> badgeIterator;
+    int badgeWidth = 160;
+    int badgeHeight = 300;
 
     Rectangle playCanvasRect;
 
@@ -54,29 +68,52 @@ public class PlayScreen implements Screen {
         this.game = game;
     }
 
-    Badge badge1, badge2, badge3, badge4;
+    // Create a button to randomise tree positions
+    TextureAtlas buttonAtlas;
+    TextButton.TextButtonStyle buttonStyle;
+    TextButton playButton;
+
+
+    int randomBadgePosition(String choice)
+    {
+        int min, max, range;
+        if (choice == "x") {
+            min = scWidth / 2 - scHeight / 2;
+            max = scWidth / 2 + scHeight / 2 - badgeWidth;
+            range = (max - min) + 1;
+            return (int) (Math.random() * range) + min;
+        } else{
+            min = 0;
+            max = scHeight - badgeHeight;
+            range = (max - min) + 1;
+            return (int)(Math.random() * range) + min;
+
+        }
+    }
+
+
 
 
     @Override
     public void show() {
 
         batch = new SpriteBatch();
+        stage = new Stage();
         scWidth = Gdx.graphics.getWidth();
         scHeight = Gdx.graphics.getHeight();
-        welcomePage = new Texture("welcomePage.png");
-        playCanvas = new Texture("playCanvas.png");
+
         mario = new Texture("mario.png");
         catpaw = new Texture("touch/catpaw.png");
         catpawSprite = new Sprite(catpaw);
         catpawSprite.setScale(0.5f, 0.5f);
         marioSprite = new Sprite(mario);
 
+        font = new BitmapFont();
+        font.setColor(Color.BLACK);
+        font.getData().setScale(5);
 
-        // Center the playcanvas with the dimension = scHeight * scHeight.
-        playcanvasSprite = new Sprite(playCanvas);
-        playcanvasSprite.setSize(scHeight, scHeight);
-        playcanvasSprite.setPosition(scWidth/2 - scHeight/2, 0);
 
+        // This is for detecting player entering the play canvas.
         playCanvasRect = new Rectangle();
         playCanvasRect.setSize(scHeight, scHeight);
         playCanvasRect.setPosition(scWidth/2 - scHeight/2, 0);
@@ -84,21 +121,15 @@ public class PlayScreen implements Screen {
         marioSprite.setScale(0.5f, 0.5f);
         marioCircle.setRadius(marioSprite.getWidth() * 0.3f); // 5% of the width
 
-        tiles = new ArrayList<Tile>();
-        tiles.add(new Tile(welcomePage, 0, 0, scWidth,scHeight));
 
         // Pos and size
-        badge1 = new Badge(new Vector2(100, 100),new Vector2(100, 200) );
-        badge2 = new Badge(new Vector2(200, 200),new Vector2(100, 200) );
-        badge3 = new Badge(new Vector2(300, 300),new Vector2(100, 200) );
-        badge4 = new Badge(new Vector2(400, 400),new Vector2(100, 200) );
+        // Initialise the badges but move them outside
+
         badges = new ArrayList<Badge>();
-        badges.add(badge1);
-        badges.add(badge2);
-        badges.add(badge3);
-        badges.add(badge4);
-
-
+        int numBadges = 4;
+        for (int i = 0; i < numBadges; i ++){
+            badges.add(new Badge(new Vector2(-400, -400),new Vector2(badgeWidth, badgeHeight) ));
+        }
 
         // Init catpaw pos
         float temp = 1.f;
@@ -129,6 +160,39 @@ public class PlayScreen implements Screen {
                 }
             }
         }
+
+
+        // For buttons
+        skin = new Skin();
+        buttonAtlas = new TextureAtlas("buttons/button1.txt");
+        skin.addRegions(buttonAtlas); // You need to do that.
+        buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.up = skin.getDrawable("button");
+        buttonStyle.over = skin.getDrawable("buttonpressed"); // over is not necessary for android.
+        buttonStyle.down = skin.getDrawable("buttonpressed");
+        buttonStyle.font = font;
+        playButton = new TextButton("play", buttonStyle);
+
+        playButton.setPosition(50, 20);
+
+        stage.addActor(playButton);
+
+        Gdx.input.setInputProcessor(stage);
+
+
+        // Input listener for buttons.
+        playButton.addListener(new InputListener(){
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y,
+                                      int pointer, int button){
+
+                // Randomise the locations of the badges.
+                for (int i = 0; i < badges.size(); i++){
+                    badges.get(i).setPosition(new Vector2(randomBadgePosition("x"), randomBadgePosition("y")));
+                }
+                return true;
+            }
+        });
     }
 
 
@@ -151,15 +215,19 @@ public class PlayScreen implements Screen {
 
         Gdx.gl.glClearColor(1,1,1,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+        stage.act();
         batch.begin();
+
         tileIterator = tiles.iterator();
         while(tileIterator.hasNext()){
             Tile cur = tileIterator.next();
             cur.render(batch);
         }
 
+
         badgeIterator = badges.iterator();
+        // This is how to change the position of the badge.
+        badges.get(1).setPosition(new Vector2(scWidth/2, scHeight/2));
         while(badgeIterator.hasNext()){
             Badge cur = badgeIterator.next();
             cur.draw(batch);
@@ -181,7 +249,7 @@ public class PlayScreen implements Screen {
             catpawSprite.setPosition(catpawX[i], catpawY[i]);
             catpawSprite.draw(batch, catpawAlpha[i]);
         }
-
+        stage.draw();
         marioSprite.setPosition(Gdx.input.getX() - marioSprite.getWidth()/2,
             scHeight - Gdx.input.getY() - marioSprite.getHeight()/2);
         marioSprite.draw(batch, 1.f);
@@ -192,7 +260,7 @@ public class PlayScreen implements Screen {
         marioCircle.setPosition(Gdx.input.getX(), scHeight - Gdx.input.getY());
         if (Intersector.overlaps(marioCircle, playCanvasRect)){
             // Once insigt use it to send OSC. But dont do it all the time
-//            Gdx.app.log("OSC", "Hit.");
+            Gdx.app.log("OSC", "Hit.");
         }
 
     }
