@@ -12,23 +12,17 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 
-public class Player extends Image {
+public class DigitPad extends Image {
 
     Vector2 position, size;
-    Texture player;
+    Texture badge;
     Rectangle bounds;
 
-    // THis is the onCreate method:
-    public Player(String fileName, Vector2 position, Vector2 size){
-
-
-        super(new Texture(Gdx.files.internal(fileName)));
+    public DigitPad(String filename, Vector2 position, Vector2 size){
+        super(new Texture(Gdx.files.internal(filename)));
         this.position = position;
         this.size = size;
         bounds = new Rectangle(position.x, position.y, size.x, size.y);
-//        Image player = new Image(new Texture(Gdx.files.internal(fileName)));
-        // Because different player can have different image
-//        player = new Texture(Gdx.files.internal(fileName));
     }
 
     public void update(){
@@ -36,7 +30,7 @@ public class Player extends Image {
     }
 
     public void draw(SpriteBatch batch){
-        batch.draw(player, position.x, position.y, size.x, size.y);
+        batch.draw(badge, position.x, position.y, size.x, size.y);
     }
 
     public Vector2 getPosition() {
@@ -62,7 +56,5 @@ public class Player extends Image {
     public void setBounds(Rectangle bounds) {
         this.bounds = bounds;
     }
-
-
 
 }

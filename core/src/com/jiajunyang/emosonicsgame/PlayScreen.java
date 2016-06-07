@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,13 +30,11 @@ public class PlayScreen implements Screen {
     int scWidth, scHeight;
     int playerWidth, playerHeight;
 
-
     Stage stage;
     Skin skin;
     BitmapFont font;
     private SpriteBatch batch; // This is in the render.
     private Sprite catpawSprite; // Add chacrecteristic to the texture.
-//    private Sprite marioSprite;
 
     // For the welcome page
 
@@ -50,11 +49,9 @@ public class PlayScreen implements Screen {
 
     Player player;
 
-
     Rectangle playCanvasRect;
 
 
-    Circle marioCircle = new Circle();
     private Texture catpaw;
 
     int numPaws = 5;
@@ -103,11 +100,11 @@ public class PlayScreen implements Screen {
         scWidth = Gdx.graphics.getWidth();
         scHeight = Gdx.graphics.getHeight();
 
-//        mario = new Texture("mario.png");
+
         catpaw = new Texture("touch/catpaw.png");
         catpawSprite = new Sprite(catpaw);
         catpawSprite.setScale(0.5f, 0.5f);
-//        marioSprite = new Sprite(mario);
+
 
         font = new BitmapFont();
         font.setColor(Color.BLACK);
@@ -119,17 +116,13 @@ public class PlayScreen implements Screen {
         playCanvasRect.setSize(scHeight, scHeight);
         playCanvasRect.setPosition(scWidth/2 - scHeight/2, 0);
 
-//        marioSprite.setScale(0.5f, 0.5f);
-//        marioCircle.setRadius(marioSprite.getWidth() * 0.3f); // 5% of the width
-//
 
         // Pos and size
         // Initialise the badges but move them outside
         playerWidth = 180;
         playerHeight = 240;
 
-        player = new Player("mario.png", new Vector2(250, 300),new Vector2(playerWidth, playerHeight)) ;
-
+        player = new Player("mario.png", new Vector2(50, 100),new Vector2(playerWidth, playerHeight)) ;
         badges = new ArrayList<Badge>();
         int numBadges = 4;
         for (int i = 0; i < numBadges; i ++){
@@ -159,18 +152,13 @@ public class PlayScreen implements Screen {
                 if (R == 0){
                     // It can alternate between two different title contents.
                     tiles.add(new Tile(new Texture("grass.jpg"), startTile+ i * division, j * division, division, division));
-
                 } else{
                     tiles.add(new Tile(new Texture("grass.jpg"), startTile + i * division, j * division, division, division));
                 }
             }
         }
 
-
-        // For buttons
         skin = new Skin();
-
-
 
         buttonAtlas = new TextureAtlas("buttons/button1.txt");
         skin.addRegions(buttonAtlas); // You need to do that.
@@ -181,11 +169,10 @@ public class PlayScreen implements Screen {
         buttonStyle.font = font;
 
         playButton = new TextButton("play", buttonStyle);
-//        marioButton = new ImageButton();
-
         playButton.setPosition(50, 20);
 
         stage.addActor(playButton);
+        stage.addActor(player);
 
 
         Gdx.input.setInputProcessor(stage);
@@ -202,6 +189,23 @@ public class PlayScreen implements Screen {
                     badges.get(i).setPosition(new Vector2(randomBadgePosition("x"), randomBadgePosition("y")));
                 }
                 return true;
+            }
+        });
+
+
+        player.addListener(new DragListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchDragged(InputEvent event, float x, float y, int pointer) {
+//                player.setPosition(new Vector2(Gdx.input.getX() - playerWidth/2,
+//                        scHeight - Gdx.input.getY() - playerHeight/2));
+                player.setBounds(Gdx.input.getX() - playerWidth/2,
+                        scHeight - Gdx.input.getY() - playerHeight/2, playerWidth, playerHeight);
+
             }
         });
     }
@@ -226,8 +230,7 @@ public class PlayScreen implements Screen {
 
         Gdx.gl.glClearColor(1,1,1,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.act();
-        stage.draw();
+
         batch.begin();
 
 
@@ -244,48 +247,14 @@ public class PlayScreen implements Screen {
         while(badgeIterator.hasNext()){
             Badge cur = badgeIterator.next();
             cur.draw(batch);
-
         }
 
-//
-        if (Gdx.input.justTouched()) {
-            updatePaws(Gdx.input.getX(), Gdx.input.getY());
-        }
 
-        // Only draw if the mouse is hover on the image.
-        if (Gdx.input.getX() > player.getPosition().x && Gdx.input.getX() < player.getPosition().x + playerWidth){
-            if (scHeight - Gdx.input.getY() > player.getPosition().y && scHeight - Gdx.input.getY() < player.getPosition().y + playerHeight)
-            {
-//                player.setPosition(new Vector2(Gdx.input.getX() - playerWidth/2,
-//                        scHeight - Gdx.input.getY() - playerHeight/2));
-                for (int i = 0; i < numPaws; i++) {
-                    catpawSprite.setPosition(catpawX[i], catpawY[i]);
-                    catpawSprite.draw(batch, catpawAlpha[i]);
-                }
-                player.setPosition(new Vector2(Gdx.input.getX() - playerWidth/2,
-                        scHeight - Gdx.input.getY() - playerHeight/2));
-                player.draw(batch);
 
-            } else{
-
-                for (int i = 0; i < numPaws; i++) {
-                    catpawSprite.setPosition(catpawX[i], catpawY[i]);
-                    catpawSprite.draw(batch, catpawAlpha[i]);
-                }
-                player.draw(batch);
-            }
-
-        } else{
-
-            for (int i = 0; i < numPaws; i++) {
-                catpawSprite.setPosition(catpawX[i], catpawY[i]);
-                catpawSprite.draw(batch, catpawAlpha[i]);
-            }
-            player.draw(batch);
-        }
 
         batch.end();
-
+        stage.act();
+        stage.draw();
         player.update(); // Update the bound
         if (Intersector.overlaps(player.bounds, playCanvasRect)){
             // Once insigt use it to send OSC. But dont do it all the time
