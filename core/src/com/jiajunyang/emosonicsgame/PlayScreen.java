@@ -42,15 +42,13 @@ public class PlayScreen implements Screen {
     ArrayList<Tile> tiles;
     Iterator<Tile> tileIterator;
 
+    Player player;
     ArrayList<Badge> badges;
     Iterator<Badge> badgeIterator;
     int badgeWidth = 160;
     int badgeHeight = 300;
 
-    Player player;
-
     Rectangle playCanvasRect;
-
 
     private Texture catpaw;
 
@@ -247,6 +245,16 @@ public class PlayScreen implements Screen {
         while(badgeIterator.hasNext()){
             Badge cur = badgeIterator.next();
             cur.draw(batch);
+        }
+
+
+        if (Gdx.input.justTouched()) {
+            updatePaws(Gdx.input.getX(), Gdx.input.getY());
+        }
+
+        for (int i = 0; i < numPaws; i++) {
+            catpawSprite.setPosition(catpawX[i], catpawY[i]);
+            catpawSprite.draw(batch, catpawAlpha[i]);
         }
 
 

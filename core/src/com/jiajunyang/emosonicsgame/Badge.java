@@ -1,8 +1,5 @@
 package com.jiajunyang.emosonicsgame;
 
-/**
- * Created by jiajunyang on 07/06/16.
- */
 
 
 import com.badlogic.gdx.Gdx;
@@ -12,13 +9,14 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
-public class Badge extends Image {
+public class Badge  {
 
     Vector2 position, size;
     Texture badge;
     Rectangle bounds;
 
     public Badge(Vector2 position, Vector2 size){
+//        super(Gdx.files.internal("tree.png"));
         this.position = position;
         this.size = size;
         bounds = new Rectangle(position.x, position.y, size.x, size.y);

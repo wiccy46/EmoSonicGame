@@ -20,8 +20,6 @@ public class Player extends Image {
 
     // THis is the onCreate method:
     public Player(String fileName, Vector2 position, Vector2 size){
-
-
         super(new Texture(Gdx.files.internal(fileName)));
         this.position = position;
         this.size = size;
