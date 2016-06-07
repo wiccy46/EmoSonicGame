@@ -11,29 +11,19 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 
-
-/**
- * Created by jiajunyang on 07/06/16.
- */
-
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-
 public class Player {
 
     Vector2 position, size;
-    Texture badge;
+    Texture player;
     Rectangle bounds;
 
-    public Player(Vector2 position, Vector2 size){
+    // THis is the onCreate method:
+    public Player(String fileName, Vector2 position, Vector2 size){
         this.position = position;
         this.size = size;
         bounds = new Rectangle(position.x, position.y, size.x, size.y);
-        badge = new Texture(Gdx.files.internal("tree.png"));
+        // Because different player can have different image
+        player = new Texture(Gdx.files.internal(fileName));
     }
 
     public void update(){
@@ -41,7 +31,7 @@ public class Player {
     }
 
     public void draw(SpriteBatch batch){
-        batch.draw(badge, position.x, position.y, size.x, size.y);
+        batch.draw(player, position.x, position.y, size.x, size.y);
     }
 
     public Vector2 getPosition() {

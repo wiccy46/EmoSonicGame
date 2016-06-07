@@ -17,30 +17,29 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-/**
- * Created by jiajunyang on 02/06/16.
- */
 public class PlayScreen implements Screen {
     int scWidth, scHeight;
+    int playerWidth, playerHeight;
+
 
     Stage stage;
     Skin skin;
     BitmapFont font;
     private SpriteBatch batch; // This is in the render.
-
     private Sprite catpawSprite; // Add chacrecteristic to the texture.
-
-    private Sprite marioSprite;
+//    private Sprite marioSprite;
 
     // For the welcome page
 
-    private Texture mario;
+//    private Texture mario;
     ArrayList<Tile> tiles;
     Iterator<Tile> tileIterator;
 
@@ -48,6 +47,9 @@ public class PlayScreen implements Screen {
     Iterator<Badge> badgeIterator;
     int badgeWidth = 160;
     int badgeHeight = 300;
+
+    Player player;
+
 
     Rectangle playCanvasRect;
 
@@ -87,7 +89,6 @@ public class PlayScreen implements Screen {
             max = scHeight - badgeHeight;
             range = (max - min) + 1;
             return (int)(Math.random() * range) + min;
-
         }
     }
 
@@ -102,11 +103,11 @@ public class PlayScreen implements Screen {
         scWidth = Gdx.graphics.getWidth();
         scHeight = Gdx.graphics.getHeight();
 
-        mario = new Texture("mario.png");
+//        mario = new Texture("mario.png");
         catpaw = new Texture("touch/catpaw.png");
         catpawSprite = new Sprite(catpaw);
         catpawSprite.setScale(0.5f, 0.5f);
-        marioSprite = new Sprite(mario);
+//        marioSprite = new Sprite(mario);
 
         font = new BitmapFont();
         font.setColor(Color.BLACK);
@@ -118,12 +119,16 @@ public class PlayScreen implements Screen {
         playCanvasRect.setSize(scHeight, scHeight);
         playCanvasRect.setPosition(scWidth/2 - scHeight/2, 0);
 
-        marioSprite.setScale(0.5f, 0.5f);
-        marioCircle.setRadius(marioSprite.getWidth() * 0.3f); // 5% of the width
-
+//        marioSprite.setScale(0.5f, 0.5f);
+//        marioCircle.setRadius(marioSprite.getWidth() * 0.3f); // 5% of the width
+//
 
         // Pos and size
         // Initialise the badges but move them outside
+        playerWidth = 180;
+        playerHeight = 240;
+
+        player = new Player("mario.png", new Vector2(50, 300),new Vector2(playerWidth, playerHeight)) ;
 
         badges = new ArrayList<Badge>();
         int numBadges = 4;
@@ -164,6 +169,9 @@ public class PlayScreen implements Screen {
 
         // For buttons
         skin = new Skin();
+
+
+
         buttonAtlas = new TextureAtlas("buttons/button1.txt");
         skin.addRegions(buttonAtlas); // You need to do that.
         buttonStyle = new TextButton.TextButtonStyle();
@@ -171,11 +179,14 @@ public class PlayScreen implements Screen {
         buttonStyle.over = skin.getDrawable("buttonpressed"); // over is not necessary for android.
         buttonStyle.down = skin.getDrawable("buttonpressed");
         buttonStyle.font = font;
+
         playButton = new TextButton("play", buttonStyle);
+//        marioButton = new ImageButton();
 
         playButton.setPosition(50, 20);
 
         stage.addActor(playButton);
+
 
         Gdx.input.setInputProcessor(stage);
 
@@ -216,7 +227,9 @@ public class PlayScreen implements Screen {
         Gdx.gl.glClearColor(1,1,1,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act();
+        stage.draw();
         batch.begin();
+
 
         tileIterator = tiles.iterator();
         while(tileIterator.hasNext()){
@@ -235,13 +248,6 @@ public class PlayScreen implements Screen {
         }
 
 
-
-
-//        playcanvasSprite.draw(batch);
-        // Draw a rectangle over the canvas
-
-
-
         if (Gdx.input.justTouched()) {
             updatePaws(Gdx.input.getX(), Gdx.input.getY());
         }
@@ -249,16 +255,17 @@ public class PlayScreen implements Screen {
             catpawSprite.setPosition(catpawX[i], catpawY[i]);
             catpawSprite.draw(batch, catpawAlpha[i]);
         }
-        stage.draw();
-        marioSprite.setPosition(Gdx.input.getX() - marioSprite.getWidth()/2,
-            scHeight - Gdx.input.getY() - marioSprite.getHeight()/2);
-        marioSprite.draw(batch, 1.f);
+//
 
-
+        // Only draw if the mouse is hover on the image.
+        player.setPosition(new Vector2(Gdx.input.getX() - playerWidth/2,
+            scHeight - Gdx.input.getY() - playerHeight/2));
+        player.draw(batch);
 
         batch.end();
-        marioCircle.setPosition(Gdx.input.getX(), scHeight - Gdx.input.getY());
-        if (Intersector.overlaps(marioCircle, playCanvasRect)){
+
+        player.update(); // Update the bound
+        if (Intersector.overlaps(player.bounds, playCanvasRect)){
             // Once insigt use it to send OSC. But dont do it all the time
             Gdx.app.log("OSC", "Hit.");
         }
