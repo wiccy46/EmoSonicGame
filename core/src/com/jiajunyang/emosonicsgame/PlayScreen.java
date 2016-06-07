@@ -128,7 +128,7 @@ public class PlayScreen implements Screen {
         playerWidth = 180;
         playerHeight = 240;
 
-        player = new Player("mario.png", new Vector2(50, 300),new Vector2(playerWidth, playerHeight)) ;
+        player = new Player("mario.png", new Vector2(250, 300),new Vector2(playerWidth, playerHeight)) ;
 
         badges = new ArrayList<Badge>();
         int numBadges = 4;
@@ -247,27 +247,49 @@ public class PlayScreen implements Screen {
 
         }
 
-
+//
         if (Gdx.input.justTouched()) {
             updatePaws(Gdx.input.getX(), Gdx.input.getY());
         }
-        for (int i = 0; i < numPaws; i++) {
-            catpawSprite.setPosition(catpawX[i], catpawY[i]);
-            catpawSprite.draw(batch, catpawAlpha[i]);
-        }
-//
 
         // Only draw if the mouse is hover on the image.
-        player.setPosition(new Vector2(Gdx.input.getX() - playerWidth/2,
-            scHeight - Gdx.input.getY() - playerHeight/2));
-        player.draw(batch);
+        if (Gdx.input.getX() > player.getPosition().x && Gdx.input.getX() < player.getPosition().x + playerWidth){
+            if (scHeight - Gdx.input.getY() > player.getPosition().y && scHeight - Gdx.input.getY() < player.getPosition().y + playerHeight)
+            {
+//                player.setPosition(new Vector2(Gdx.input.getX() - playerWidth/2,
+//                        scHeight - Gdx.input.getY() - playerHeight/2));
+                for (int i = 0; i < numPaws; i++) {
+                    catpawSprite.setPosition(catpawX[i], catpawY[i]);
+                    catpawSprite.draw(batch, catpawAlpha[i]);
+                }
+                player.setPosition(new Vector2(Gdx.input.getX() - playerWidth/2,
+                        scHeight - Gdx.input.getY() - playerHeight/2));
+                player.draw(batch);
+
+            } else{
+
+                for (int i = 0; i < numPaws; i++) {
+                    catpawSprite.setPosition(catpawX[i], catpawY[i]);
+                    catpawSprite.draw(batch, catpawAlpha[i]);
+                }
+                player.draw(batch);
+            }
+
+        } else{
+
+            for (int i = 0; i < numPaws; i++) {
+                catpawSprite.setPosition(catpawX[i], catpawY[i]);
+                catpawSprite.draw(batch, catpawAlpha[i]);
+            }
+            player.draw(batch);
+        }
 
         batch.end();
 
         player.update(); // Update the bound
         if (Intersector.overlaps(player.bounds, playCanvasRect)){
             // Once insigt use it to send OSC. But dont do it all the time
-            Gdx.app.log("OSC", "Hit.");
+//            Gdx.app.log("OSC", "Hit.");
         }
 
     }
