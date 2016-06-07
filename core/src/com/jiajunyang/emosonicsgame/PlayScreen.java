@@ -12,6 +12,9 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 /**
  * Created by jiajunyang on 02/06/16.
  */
@@ -27,8 +30,13 @@ public class PlayScreen implements Screen {
     private Texture welcomePage;
     private Texture playCanvas;
     private Texture mario;
+    ArrayList<Tile> tiles;
+    Iterator<Tile> tileIterator;
+    ArrayList<Badge> badges;
+    Iterator<Badge> badgeIterator;
 
     Rectangle playCanvasRect;
+
 
     Circle marioCircle = new Circle();
     private Texture catpaw;
@@ -46,6 +54,9 @@ public class PlayScreen implements Screen {
         this.game = game;
     }
 
+    Badge badge1, badge2, badge3, badge4;
+
+
     @Override
     public void show() {
 
@@ -57,7 +68,9 @@ public class PlayScreen implements Screen {
         mario = new Texture("mario.png");
         catpaw = new Texture("touch/catpaw.png");
         catpawSprite = new Sprite(catpaw);
+        catpawSprite.setScale(0.5f, 0.5f);
         marioSprite = new Sprite(mario);
+
 
         // Center the playcanvas with the dimension = scHeight * scHeight.
         playcanvasSprite = new Sprite(playCanvas);
@@ -71,8 +84,19 @@ public class PlayScreen implements Screen {
         marioSprite.setScale(0.5f, 0.5f);
         marioCircle.setRadius(marioSprite.getWidth() * 0.3f); // 5% of the width
 
+        tiles = new ArrayList<Tile>();
+        tiles.add(new Tile(welcomePage, 0, 0, scWidth,scHeight));
 
-
+        // Pos and size
+        badge1 = new Badge(new Vector2(100, 100),new Vector2(100, 200) );
+        badge2 = new Badge(new Vector2(200, 200),new Vector2(100, 200) );
+        badge3 = new Badge(new Vector2(300, 300),new Vector2(100, 200) );
+        badge4 = new Badge(new Vector2(400, 400),new Vector2(100, 200) );
+        badges = new ArrayList<Badge>();
+        badges.add(badge1);
+        badges.add(badge2);
+        badges.add(badge3);
+        badges.add(badge4);
 
 
 
@@ -88,6 +112,23 @@ public class PlayScreen implements Screen {
         }
         // -------------------
 
+        // Initialise tile
+        tiles = new ArrayList<Tile>();
+        // Add tile
+        int startTile = (scWidth - scHeight)/2;
+        int division = scHeight/6;
+        for (int i = 0; i < 6; i++){
+            for (int j = 0; j < 6; j++){
+                int R = (int) ((Math.random() * (2 - 0) + 0)); // random between 1 or 0
+                if (R == 0){
+                    // It can alternate between two different title contents.
+                    tiles.add(new Tile(new Texture("grass.jpg"), startTile+ i * division, j * division, division, division));
+
+                } else{
+                    tiles.add(new Tile(new Texture("grass.jpg"), startTile + i * division, j * division, division, division));
+                }
+            }
+        }
     }
 
 
@@ -112,9 +153,23 @@ public class PlayScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
-        batch.draw(welcomePage, 0, 0, scWidth, scHeight);
+        tileIterator = tiles.iterator();
+        while(tileIterator.hasNext()){
+            Tile cur = tileIterator.next();
+            cur.render(batch);
+        }
 
-        playcanvasSprite.draw(batch);
+        badgeIterator = badges.iterator();
+        while(badgeIterator.hasNext()){
+            Badge cur = badgeIterator.next();
+            cur.draw(batch);
+
+        }
+
+
+
+
+//        playcanvasSprite.draw(batch);
         // Draw a rectangle over the canvas
 
 
@@ -136,7 +191,8 @@ public class PlayScreen implements Screen {
         batch.end();
         marioCircle.setPosition(Gdx.input.getX(), scHeight - Gdx.input.getY());
         if (Intersector.overlaps(marioCircle, playCanvasRect)){
-            // Once insigt use it to send OSC. But dont do it all the time.
+            // Once insigt use it to send OSC. But dont do it all the time
+//            Gdx.app.log("OSC", "Hit.");
         }
 
     }
