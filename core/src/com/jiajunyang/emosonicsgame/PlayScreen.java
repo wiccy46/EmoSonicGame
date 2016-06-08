@@ -49,7 +49,7 @@ public class PlayScreen implements Screen {
 
     Player player;
     ArrayList<Badge> badges;
-    Iterator<Badge> badgeIterator; // This is not used.
+//    Iterator<Badge> badgeIterator; // This is not used.
     int badgeWidth = 160;
     int badgeHeight = 300;
     int numBadges = 4;
@@ -57,7 +57,6 @@ public class PlayScreen implements Screen {
     Rectangle playCanvasRect;
 
     private Texture catpaw;
-
     int numPaws = 5;
     // It takes x, y, alpha
     float[]catpawAlpha = new float[numPaws];

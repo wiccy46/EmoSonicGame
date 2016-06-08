@@ -16,65 +16,76 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
+import java.util.ArrayList;
+
 /**
  * Created by jiajunyang on 02/06/16.
  */
 
-// Maybe I dont need the set IP button.
-
 public class MainMenu implements Screen {
-
-    SpriteBatch batch;
-    // All UI element.
-    Stage stage;
-    Label label;
+    // For title screen
+    Label titleLabel;
+    // Set up the label style
     Label.LabelStyle labelStyle;
 
-    // For button.
+
+    // Game overall element.
+    SpriteBatch batch;
+    Stage stage;
     TextureAtlas buttonAtlas;
     TextButton.TextButtonStyle buttonStyle;
-    TextButton button, sendIPButton;
+    TextButton playButton, sendIPButton;
     Skin skin;
     BitmapFont font;
-
     Game game;
     public MainMenu(Game game){
         this.game = game;
     }
-    public static String myIP = "192.168.11.93";
     float scWidth, scHeight;
 
 
+    // IP input section:
+    // Define num pad properties.
+    Label ipLabel, ipConfirmationLabel;
     DigitPad n1, n2, n3, n4, n5, n6, n7, n8,n9, n0, ndot, ndel;
     float n5x, n5y;
     public int numWidth = 260;
     public int numHeight = 260;
-
-
-
+    // For appending the deleting only. The the actual variable to store IP
+    ArrayList<String> inputIP = new ArrayList<String>();
+    boolean checkIP = false; // This is used to check if ip is ok. Also it prevents game to start if ip not correct.
+    public static String inputIPString = "";
+    // -------------------------------
 
     // Pass IP to PlayScreen.java
     public static String retriveIP()
     {
-        return myIP;
+        return inputIPString;
     }
 
 
     @Override
     public void show() {
         batch = new SpriteBatch();
+        stage = new Stage();
 
         scWidth = Gdx.graphics.getWidth();
         scHeight = Gdx.graphics.getHeight();
 
         font = new BitmapFont();
         font.setColor(Color.BLACK);
-        font.getData().setScale(5);
+        font.getData().setScale(8);
+        labelStyle =  new Label.LabelStyle(font, Color.BLACK);
 
+        // label: welcome page, ipLabel: display the entered IP address, ipConfirmationLabel: tell you whether input is valid.
+        titleLabel = new Label("Welcome to EmoSonics", labelStyle);
+        titleLabel.setPosition(scWidth/2  - titleLabel.getWidth()/2, scHeight - 200);
+
+        // Numpad section
+        // n5x, n5y define the center position of the key pad.
         n5x = 350;
         n5y = 2 * numHeight + 30;
-
-
+        // Create instance.
         n1 = new DigitPad("numPad/1.png", new Vector2(n5x - 1 * numWidth, n5y + numHeight),new Vector2(numWidth, numHeight));
         n2 = new DigitPad("numPad/2.png", new Vector2(n5x, n5y + numHeight),new Vector2(numWidth, numHeight));
         n3 = new DigitPad("numPad/3.png", new Vector2(n5x + 1 * numWidth, n5y + numHeight),new Vector2(numWidth, numHeight));
@@ -89,13 +100,13 @@ public class MainMenu implements Screen {
         n0 = new DigitPad("numPad/0.png", new Vector2(n5x, n5y - 2 * numHeight),new Vector2(numWidth, numHeight));
 
 
-        stage = new Stage();
-
-        // Create title
-        labelStyle =  new Label.LabelStyle(font, Color.BLACK);
-        label = new Label("Welcome to EmoSonics", labelStyle);
-        label.setPosition(scWidth/2  - label.getWidth()/2, scHeight - 200);
-        stage.addActor(label);
+        //ipLabel: display the entered IP address, ipConfirmationLabel: tell you whether input is valid.
+        ipLabel = new Label("", labelStyle);
+        ipConfirmationLabel = new Label("", labelStyle);
+        final IPAddressValidator ipvalidator = new IPAddressValidator();
+        ipLabel.setPosition(n5x - 1 * numWidth, n5y + 2 * numHeight + 50 );
+        ipConfirmationLabel.setPosition(scWidth/2 - 200, scHeight - 400); // Best to be right next to Validation button
+        //-------------------------------------
 
         // For buttons
         skin = new Skin();
@@ -106,13 +117,14 @@ public class MainMenu implements Screen {
         buttonStyle.over = skin.getDrawable("buttonpressed"); // over is not necessary for android.
         buttonStyle.down = skin.getDrawable("buttonpressed");
         buttonStyle.font = font;
-        button = new TextButton("begin", buttonStyle);
-        sendIPButton = new TextButton("Set IP", buttonStyle);
-        button.setPosition(scWidth - 400, 50);
+        playButton = new TextButton("Let's Play", buttonStyle);
+        sendIPButton = new TextButton("Confirm IP", buttonStyle);
+        playButton.setPosition(scWidth - 400, 50);
         sendIPButton.setPosition(scWidth - 400,400);
-        stage.addActor(button);
-        stage.addActor(sendIPButton);
+        //-------------------------------------
 
+        stage.addActor(playButton);
+        stage.addActor(sendIPButton);
         stage.addActor(n0);
         stage.addActor(n1);
         stage.addActor(n2);
@@ -125,31 +137,221 @@ public class MainMenu implements Screen {
         stage.addActor(n9);
         stage.addActor(ndot);
         stage.addActor(ndel);
+        stage.addActor(titleLabel);
+        stage.addActor(ipLabel);
+        stage.addActor(ipConfirmationLabel);
 
         Gdx.input.setInputProcessor(stage);
 
-
-        // Input listener for buttons.
-        button.addListener(new InputListener(){
+        // Play button
+        playButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y,
                                       int pointer, int button){
-                game.setScreen(new PlayScreen(game));
+
+                if (checkIP){
+                    game.setScreen(new PlayScreen(game));
+
+                }
+                else{
+                    ipConfirmationLabel.setText("Please enter a valid IP before starting the game.");
+                }
 
                 return true;
             }
         });
 
+        // Validate IP button
         sendIPButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y,
                                       int pointer, int button){
-                myIP = "192.168.11.94";
-                System.out.println(myIP);
+
+
+                checkIP = ipvalidator.validate(inputIPString);
+                if (checkIP){
+                    ipConfirmationLabel.setText("Valid IP");
+                } else{
+                    ipConfirmationLabel.setText("Invalid IP, please try again");
+                }
+
                 return true;
             }
         });
-        // It is like create
+        //-------------------------------------
+
+        // Add listener of the numpad.
+        // Each badge print a specific call
+        n1.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                inputIP.add("1");
+                inputIPString = "";
+                for (String s : inputIP)
+                {
+                    inputIPString += s ;
+                }
+                ipLabel.setText(inputIPString);
+                System.out.println(inputIPString);
+                return true;
+            }
+        });
+        n2.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                inputIP.add("2");
+                inputIPString = "";
+                for (String s : inputIP)
+                {
+                    inputIPString += s ;
+                }
+                ipLabel.setText(inputIPString);
+                System.out.println(inputIPString);
+                return true;
+            }
+        });
+        n3.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                inputIP.add("3");
+                inputIPString = "";
+                for (String s : inputIP)
+                {
+                    inputIPString += s ;
+                }
+                ipLabel.setText(inputIPString);
+                System.out.println(inputIPString);
+                return true;
+            }
+        });
+        n4.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                inputIP.add("4");
+                inputIPString = "";
+                for (String s : inputIP)
+                {
+                    inputIPString += s;
+                }
+                ipLabel.setText(inputIPString);
+                System.out.println(inputIPString);
+                return true;
+            }
+        });
+        n5.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                inputIP.add("5");
+                inputIPString = "";
+                for (String s : inputIP)
+                {
+                    inputIPString += s;
+                }
+                ipLabel.setText(inputIPString);
+                System.out.println(inputIPString);
+                return true;
+            }
+        });
+        n6.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                inputIP.add("6");
+                inputIPString = "";
+                for (String s : inputIP)
+                {
+                    inputIPString += s;
+                }
+                ipLabel.setText(inputIPString);
+                System.out.println(inputIPString);
+                return true;
+            }
+        });
+        n7.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                inputIP.add("7");
+                inputIPString = "";
+                for (String s : inputIP)
+                {
+                    inputIPString += s;
+                }
+                ipLabel.setText(inputIPString);
+                System.out.println(inputIPString);
+                return true;
+            }
+        });
+        n8.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                inputIP.add("8");
+                inputIPString = "";
+                for (String s : inputIP)
+                {
+                    inputIPString += s;
+                }
+                ipLabel.setText(inputIPString);
+                System.out.println(inputIPString);
+                return true;
+            }
+        });
+        n9.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                inputIP.add("9");
+                inputIPString = "";
+                for (String s : inputIP)
+                {
+                    inputIPString += s;
+                }
+                ipLabel.setText(inputIPString);
+                System.out.println(inputIPString);
+                return true;
+            }
+        });
+        n0.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                inputIP.add("0");
+                inputIPString = "";
+                for (String s : inputIP)
+                {
+                    inputIPString += s;
+                }
+                ipLabel.setText(inputIPString);
+                System.out.println(inputIPString);
+                return true;
+            }
+        });
+        ndot.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                inputIP.add(".");
+                inputIPString = "";
+                for (String s : inputIP)
+                {
+                    inputIPString += s;
+                }
+                ipLabel.setText(inputIPString);
+                System.out.println(inputIPString);
+                return true;
+            }
+        });
+        ndel.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                inputIP.remove(inputIP.size() - 1);
+                inputIPString = "";
+                for (String s : inputIP)
+                {
+                    inputIPString += s;
+                }
+                ipLabel.setText(inputIPString);
+                System.out.println(inputIPString);
+                return true;
+            }
+        });
+        //-------------------------------------
+
     }
 
     @Override
