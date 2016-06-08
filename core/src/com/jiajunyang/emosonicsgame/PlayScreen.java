@@ -49,6 +49,7 @@ public class PlayScreen implements Screen {
     Iterator<Badge> badgeIterator;
     int badgeWidth = 160;
     int badgeHeight = 300;
+    int numBadges = 4;
 
     Rectangle playCanvasRect;
 
@@ -124,7 +125,7 @@ public class PlayScreen implements Screen {
 
         player = new Player("mario.png", new Vector2(50, 300),new Vector2(playerWidth, playerHeight)) ;
         badges = new ArrayList<Badge>();
-        int numBadges = 4;
+
         for (int i = 0; i < numBadges; i ++){
             badges.add(new Badge(new Vector2(-400, -400),new Vector2(badgeWidth, badgeHeight) ));
         }
@@ -191,6 +192,7 @@ public class PlayScreen implements Screen {
                 action = "play";
                 Thread play = new Thread(new OSCSend(myIP, model, action,msg));
                 play.start();
+                badges.get(0).setScale(1.2f, 1.2f);
                 return true;
             }
         });
@@ -202,6 +204,7 @@ public class PlayScreen implements Screen {
                 action = "play";
                 Thread play = new Thread(new OSCSend(myIP, model, action, msg));
                 play.start();
+                badges.get(1).setScale(1.2f, 1.2f);
                 return true;
             }
         });
@@ -213,6 +216,7 @@ public class PlayScreen implements Screen {
                 msg = "2";
                 Thread play = new Thread(new OSCSend(myIP, model, action, msg));
                 play.start();
+                badges.get(2).setScale(1.2f, 1.2f);
                 return true;
             }
         });
@@ -224,6 +228,7 @@ public class PlayScreen implements Screen {
                 msg = "3";
                 Thread play = new Thread(new OSCSend(myIP, model, action, msg));
                 play.start();
+                badges.get(3).setScale(1.2f, 1.2f);
                 return true;
             }
         });
@@ -312,8 +317,6 @@ public class PlayScreen implements Screen {
         }
 
 
-
-
         batch.end();
         stage.act();
         stage.draw();
@@ -322,6 +325,11 @@ public class PlayScreen implements Screen {
             // Once insigt use it to send OSC. But dont do it all the time
             Gdx.app.log("OSC", "Hit.");
         }
+
+        for (int i = 0; i < numBadges; i ++){
+            badges.get(i).setScale(1.f, 1.f);
+        }
+
 
     }
 
