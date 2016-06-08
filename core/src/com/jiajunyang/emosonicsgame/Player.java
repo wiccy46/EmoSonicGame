@@ -24,9 +24,8 @@ public class Player extends Image {
         this.position = position;
         this.size = size;
         bounds = new Rectangle(position.x, position.y, size.x, size.y);
-//        Image player = new Image(new Texture(Gdx.files.internal(fileName)));
-        // Because different player can have different image
-//        player = new Texture(Gdx.files.internal(fileName));
+        super.setPosition(position.x, position.y);
+        super.setSize(size.x, size.y);
     }
 
     public void update(){

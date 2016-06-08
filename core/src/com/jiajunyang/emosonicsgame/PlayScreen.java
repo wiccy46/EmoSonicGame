@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 
 import java.util.ArrayList;
@@ -36,9 +37,6 @@ public class PlayScreen implements Screen {
     private SpriteBatch batch; // This is in the render.
     private Sprite catpawSprite; // Add chacrecteristic to the texture.
 
-    // For the welcome page
-
-//    private Texture mario;
     ArrayList<Tile> tiles;
     Iterator<Tile> tileIterator;
 
@@ -172,8 +170,46 @@ public class PlayScreen implements Screen {
         stage.addActor(playButton);
         stage.addActor(player);
 
+//
+        for (int i = 0; i < numBadges; i ++){
+            stage.addActor(badges.get(i));
+        }
+
+
+
+
+
 
         Gdx.input.setInputProcessor(stage);
+
+        badges.get(0).addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("0");
+                return true;
+            }
+        });
+        badges.get(1).addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("1");
+                return true;
+            }
+        });
+        badges.get(2).addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("2");
+                return true;
+            }
+        });
+        badges.get(3).addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("3");
+                return true;
+            }
+        });
 
 
         // Input listener for buttons.
@@ -181,10 +217,13 @@ public class PlayScreen implements Screen {
             @Override
             public boolean touchDown (InputEvent event, float x, float y,
                                       int pointer, int button){
-
+                int tempX, tempY;
                 // Randomise the locations of the badges.
                 for (int i = 0; i < badges.size(); i++){
-                    badges.get(i).setPosition(new Vector2(randomBadgePosition("x"), randomBadgePosition("y")));
+                    tempX = randomBadgePosition("x");
+                    tempY = randomBadgePosition("y");
+                    badges.get(i).setBounds(tempX, tempY, badgeWidth, badgeHeight);
+//                    badges.get(i).setPosition(new Vector2(tempX, tempY));
                 }
                 return true;
             }
@@ -199,13 +238,13 @@ public class PlayScreen implements Screen {
 
             @Override
             public void touchDragged(InputEvent event, float x, float y, int pointer) {
-//                player.setPosition(new Vector2(Gdx.input.getX() - playerWidth/2,
-//                        scHeight - Gdx.input.getY() - playerHeight/2));
+
                 player.setBounds(Gdx.input.getX() - playerWidth/2,
                         scHeight - Gdx.input.getY() - playerHeight/2, playerWidth, playerHeight);
 
             }
         });
+
     }
 
 
@@ -231,21 +270,19 @@ public class PlayScreen implements Screen {
 
         batch.begin();
 
-
         tileIterator = tiles.iterator();
         while(tileIterator.hasNext()){
             Tile cur = tileIterator.next();
             cur.render(batch);
         }
 
-
-        badgeIterator = badges.iterator();
-        // This is how to change the position of the badge.
-        badges.get(1).setPosition(new Vector2(scWidth/2, scHeight/2));
-        while(badgeIterator.hasNext()){
-            Badge cur = badgeIterator.next();
-            cur.draw(batch);
-        }
+//
+//        badgeIterator = badges.iterator();
+//
+//        while(badgeIterator.hasNext()){
+//            Badge cur = badgeIterator.next();
+//            cur.draw(batch);
+//        }
 
 
         if (Gdx.input.justTouched()) {
@@ -266,7 +303,7 @@ public class PlayScreen implements Screen {
         player.update(); // Update the bound
         if (Intersector.overlaps(player.bounds, playCanvasRect)){
             // Once insigt use it to send OSC. But dont do it all the time
-//            Gdx.app.log("OSC", "Hit.");
+            Gdx.app.log("OSC", "Hit.");
         }
 
     }
