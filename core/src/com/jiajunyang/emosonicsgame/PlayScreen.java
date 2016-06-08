@@ -28,7 +28,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class PlayScreen implements Screen {
-    String myIP = "192.168.11.93";
+    // Need a button to go back to the menu.
+
+
+    String myIP = MainMenu.retriveIP();
     String model = "abstract";
     String action, msg;
 
@@ -46,7 +49,7 @@ public class PlayScreen implements Screen {
 
     Player player;
     ArrayList<Badge> badges;
-    Iterator<Badge> badgeIterator;
+    Iterator<Badge> badgeIterator; // This is not used.
     int badgeWidth = 160;
     int badgeHeight = 300;
     int numBadges = 4;

@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 public class Player extends Image {
 
+
     Vector2 position, size;
     Texture player;
     Rectangle bounds;
