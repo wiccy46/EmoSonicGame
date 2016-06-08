@@ -21,17 +21,18 @@ import java.util.List;
  */
 
 public class OSCSend implements Runnable{
-    String myIP, action, model;
+    String myIP, action, model, msg;
     int myPort = 7001;
     OSCPortOut oscPortOut;
 
 
     // Updating parameters and setup OSC port out.
     // Takes 5 parameters.
-    public OSCSend(String myIP, String model, String action){
+    public OSCSend(String myIP, String model, String action, String msg){
         this.myIP = myIP;
         this.model = model; // model is int from the radiogroup. Hence it needs to be convert to string: vocal an
         this.action = action;
+        this.msg = msg;
         try{
             // Connect to IP and port
             this.oscPortOut  = new OSCPortOut(InetAddress.getByName(myIP), myPort);
@@ -46,7 +47,7 @@ public class OSCSend implements Runnable{
     private void next(){
         String[] sendBang;
         sendBang = new String[1];
-        sendBang[0] = "bang";
+        sendBang[0] = action;
         List alist = Arrays.asList(sendBang);
         OSCMessage message = new OSCMessage("/next", alist);
         Gdx.app.log("OSC: ", "Next Sound.");
@@ -59,13 +60,14 @@ public class OSCSend implements Runnable{
     }
 
     private void play(){
-//        ArrayList<Object> sendBang = new ArrayList<>();
-        String[] sendBang;
-        sendBang = new String[1];
-        sendBang[0] = "bang";
-        List alist = Arrays.asList(sendBang);
-        OSCMessage message = new OSCMessage("/save", alist);
-        Gdx.app.log("OSC: ", "Play");
+        ArrayList sendBang = new ArrayList();
+//        String[] sendBang;
+//        sendBang = new String[1];
+//        sendBang[0] = msg;
+//        List alist = Arrays.asList(sendBang);
+        sendBang.add(msg);
+        OSCMessage message = new OSCMessage("/play", sendBang);
+//        Gdx.app.log("OSC: ", msg);
         try{
             oscPortOut.send(message);
         } catch (Exception e){
@@ -75,7 +77,6 @@ public class OSCSend implements Runnable{
 
 
     private void init(){
-
         Gdx.app.log("OSC", "IniTrigger.");
 
     }

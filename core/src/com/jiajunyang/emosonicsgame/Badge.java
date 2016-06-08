@@ -1,10 +1,10 @@
 package com.jiajunyang.emosonicsgame;
 
 
+// Badge is used as a randomise trees on the playcanvas. By clicking on it. It trigger a sound.
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 public class Badge extends Image {
 
     Vector2 position, size;
-    Texture badge;
     Rectangle bounds;
 
     public Badge(Vector2 position, Vector2 size){

@@ -28,6 +28,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class PlayScreen implements Screen {
+    String myIP = "192.168.11.93";
+    String model = "abstract";
+    String action, msg;
+
     int scWidth, scHeight;
     int playerWidth, playerHeight;
 
@@ -118,7 +122,7 @@ public class PlayScreen implements Screen {
         playerWidth = 180;
         playerHeight = 240;
 
-        player = new Player("mario.png", new Vector2(50, 100),new Vector2(playerWidth, playerHeight)) ;
+        player = new Player("mario.png", new Vector2(50, 300),new Vector2(playerWidth, playerHeight)) ;
         badges = new ArrayList<Badge>();
         int numBadges = 4;
         for (int i = 0; i < numBadges; i ++){
@@ -176,37 +180,50 @@ public class PlayScreen implements Screen {
         }
 
 
-
-
-
-
         Gdx.input.setInputProcessor(stage);
 
+        // Each badge print a specific call
         badges.get(0).addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("0");
+
+                msg = "0";
+                action = "play";
+                Thread play = new Thread(new OSCSend(myIP, model, action,msg));
+                play.start();
                 return true;
             }
         });
         badges.get(1).addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("1");
+
+                msg = "1";
+                action = "play";
+                Thread play = new Thread(new OSCSend(myIP, model, action, msg));
+                play.start();
                 return true;
             }
         });
         badges.get(2).addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("2");
+
+                action = "play";
+                msg = "2";
+                Thread play = new Thread(new OSCSend(myIP, model, action, msg));
+                play.start();
                 return true;
             }
         });
         badges.get(3).addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("3");
+
+                action = "play";
+                msg = "3";
+                Thread play = new Thread(new OSCSend(myIP, model, action, msg));
+                play.start();
                 return true;
             }
         });
