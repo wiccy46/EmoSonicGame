@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -23,14 +24,14 @@ import java.util.ArrayList;
  */
 
 public class MainMenu implements Screen {
-    // For title screen
-    Label titleLabel;
+
     // Set up the label style
     Label.LabelStyle labelStyle;
 
 
     // Game overall element.
     SpriteBatch batch;
+    Texture title, background;
     Stage stage;
     TextureAtlas buttonAtlas;
     TextButton.TextButtonStyle buttonStyle;
@@ -68,35 +69,34 @@ public class MainMenu implements Screen {
     public void show() {
         batch = new SpriteBatch();
         stage = new Stage();
+        title = new Texture("title.png");
+        background = new Texture("welcomePage.png");
 
         scWidth = Gdx.graphics.getWidth();
         scHeight = Gdx.graphics.getHeight();
 
         font = new BitmapFont();
         font.setColor(Color.BLACK);
-        font.getData().setScale(8);
+        font.getData().setScale(6);
         labelStyle =  new Label.LabelStyle(font, Color.BLACK);
 
-        // label: welcome page, ipLabel: display the entered IP address, ipConfirmationLabel: tell you whether input is valid.
-        titleLabel = new Label("Welcome to EmoSonics", labelStyle);
-        titleLabel.setPosition(scWidth/2  - titleLabel.getWidth()/2, scHeight - 200);
 
         // Numpad section
         // n5x, n5y define the center position of the key pad.
         n5x = 350;
         n5y = 2 * numHeight + 30;
         // Create instance.
-        n1 = new DigitPad("numPad/1.png", new Vector2(n5x - 1 * numWidth, n5y + numHeight),new Vector2(numWidth, numHeight));
+        n1 = new DigitPad("numPad/1.png", new Vector2(n5x -  numWidth, n5y + numHeight),new Vector2(numWidth, numHeight));
         n2 = new DigitPad("numPad/2.png", new Vector2(n5x, n5y + numHeight),new Vector2(numWidth, numHeight));
-        n3 = new DigitPad("numPad/3.png", new Vector2(n5x + 1 * numWidth, n5y + numHeight),new Vector2(numWidth, numHeight));
-        n4 = new DigitPad("numPad/4.png", new Vector2(n5x - 1 * numWidth, n5y),new Vector2(numWidth, numHeight));
+        n3 = new DigitPad("numPad/3.png", new Vector2(n5x + numWidth, n5y + numHeight),new Vector2(numWidth, numHeight));
+        n4 = new DigitPad("numPad/4.png", new Vector2(n5x - numWidth, n5y),new Vector2(numWidth, numHeight));
         n5 = new DigitPad("numPad/5.png", new Vector2(n5x, n5y),new Vector2(numWidth, numHeight));
-        n6 = new DigitPad("numPad/6.png", new Vector2(n5x + 1 * numWidth, n5y),new Vector2(numWidth, numHeight));
-        n7 = new DigitPad("numPad/7.png", new Vector2(n5x - 1 * numWidth, n5y - numHeight),new Vector2(numWidth, numHeight));
+        n6 = new DigitPad("numPad/6.png", new Vector2(n5x + numWidth, n5y),new Vector2(numWidth, numHeight));
+        n7 = new DigitPad("numPad/7.png", new Vector2(n5x - numWidth, n5y - numHeight),new Vector2(numWidth, numHeight));
         n8 = new DigitPad("numPad/8.png", new Vector2(n5x, n5y - numHeight),new Vector2(numWidth, numHeight));
-        n9 = new DigitPad("numPad/9.png", new Vector2(n5x + 1 * numWidth, n5y - numHeight),new Vector2(numWidth, numHeight));
-        ndot = new DigitPad("numPad/dot.png", new Vector2(n5x - 1 * numWidth,n5y - 2 * numHeight ),new Vector2(numWidth, numHeight));
-        ndel = new DigitPad("numPad/del.png", new Vector2(n5x + 1 * numWidth, n5y - 2 * numHeight),new Vector2(numWidth, numHeight));
+        n9 = new DigitPad("numPad/9.png", new Vector2(n5x + numWidth, n5y - numHeight),new Vector2(numWidth, numHeight));
+        ndot = new DigitPad("numPad/dot.png", new Vector2(n5x - numWidth,n5y - 2 * numHeight ),new Vector2(numWidth, numHeight));
+        ndel = new DigitPad("numPad/del.png", new Vector2(n5x + numWidth, n5y - 2 * numHeight),new Vector2(numWidth, numHeight));
         n0 = new DigitPad("numPad/0.png", new Vector2(n5x, n5y - 2 * numHeight),new Vector2(numWidth, numHeight));
 
 
@@ -104,7 +104,7 @@ public class MainMenu implements Screen {
         ipLabel = new Label("", labelStyle);
         ipConfirmationLabel = new Label("", labelStyle);
         final IPAddressValidator ipvalidator = new IPAddressValidator();
-        ipLabel.setPosition(n5x - 1 * numWidth, n5y + 2 * numHeight + 50 );
+        ipLabel.setPosition(n5x - numWidth, n5y + 2 * numHeight + 50 );
         ipConfirmationLabel.setPosition(scWidth/2 - 200, scHeight - 400); // Best to be right next to Validation button
         //-------------------------------------
 
@@ -137,7 +137,7 @@ public class MainMenu implements Screen {
         stage.addActor(n9);
         stage.addActor(ndot);
         stage.addActor(ndel);
-        stage.addActor(titleLabel);
+
         stage.addActor(ipLabel);
         stage.addActor(ipConfirmationLabel);
 
@@ -359,10 +359,14 @@ public class MainMenu implements Screen {
         Gdx.gl.glClearColor(1,1,1,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         // Same as other render.
-        stage.act();
+
         batch.begin();
-        stage.draw();
+        batch.draw(background, 0, 0, scWidth, scHeight);
+        batch.draw(title, scWidth/2 - title.getWidth()/2, scHeight - 250);
+
         batch.end();
+        stage.act();
+        stage.draw();
     }
 
     @Override
