@@ -150,11 +150,13 @@ public class MainMenu implements Screen {
                                       int pointer, int button){
 
                 if (checkIP){
+                    checkIP = ipvalidator.validate(inputIPString);
                     game.setScreen(new PlayScreen(game));
 
                 }
                 else{
                     ipConfirmationLabel.setText("Please enter a valid IP before starting the game.");
+                    game.setScreen(new PlayScreen(game));
                 }
 
                 return true;

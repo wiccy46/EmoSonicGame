@@ -23,9 +23,9 @@ public class Badge extends Image {
         super.setSize(size.x, size.y);
     }
 
-//    public void update(){
-//        bounds.set(position.x, position.y, size.x, size.y);
-//    }
+    public void update(){
+        bounds.set(super.getX(), super.getY(), size.x, size.y);
+    }
 //
 //    public void draw(SpriteBatch batch){
 //        batch.draw(badge, position.x, position.y, size.x, size.y);
@@ -47,9 +47,9 @@ public class Badge extends Image {
 //        this.size = size;
 //    }
 //
-//    public Rectangle getBounds() {
-//        return bounds;
-//    }
+    public Rectangle getBounds() {
+        return bounds;
+    }
 //
 //    public void setBounds(Rectangle bounds) {
 //        this.bounds = bounds;

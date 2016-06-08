@@ -30,12 +30,10 @@ public class Player extends Image {
     }
 
     public void update(){
-        bounds.set(position.x, position.y, size.x, size.y);
+        bounds.set(super.getX(), super.getY(), size.x, size.y);
     }
 
-    public void draw(SpriteBatch batch){
-        batch.draw(player, position.x, position.y, size.x, size.y);
-    }
+
 
     public Vector2 getPosition() {
         return position;

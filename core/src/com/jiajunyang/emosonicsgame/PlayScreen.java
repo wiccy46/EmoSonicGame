@@ -29,6 +29,7 @@ import java.util.Iterator;
 
 public class PlayScreen implements Screen {
     // Need a button to go back to the menu.
+    // Need a submit button.
 
 
     String myIP = MainMenu.retriveIP();
@@ -74,8 +75,9 @@ public class PlayScreen implements Screen {
     TextureAtlas buttonAtlas;
     TextButton.TextButtonStyle buttonStyle;
     TextButton playButton;
+    TextButton submitButton; // Test whether you got the right answer.
 
-
+    static boolean submit = false;
     int randomBadgePosition(String choice)
     {
         int min, max, range;
@@ -174,7 +176,11 @@ public class PlayScreen implements Screen {
         playButton = new TextButton("play", buttonStyle);
         playButton.setPosition(50, 20);
 
+        submitButton = new TextButton("submit", buttonStyle);
+        submitButton.setPosition(50, 200);
+
         stage.addActor(playButton);
+        stage.addActor(submitButton);
         stage.addActor(player);
 
 //
@@ -236,7 +242,20 @@ public class PlayScreen implements Screen {
         });
 
 
-        // Input listener for buttons.
+        // Test the result.
+        playButton.addListener(new InputListener(){
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y,
+                                      int pointer, int button){
+                int tempX, tempY;
+                // Test whether the result is ok.
+                submit = true;
+                return true;
+            }
+        });
+
+
+        // Randomise the position of the trees.
         playButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y,
@@ -253,7 +272,7 @@ public class PlayScreen implements Screen {
             }
         });
 
-
+        // Drage player listener...
         player.addListener(new DragListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -293,20 +312,12 @@ public class PlayScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
-
         tileIterator = tiles.iterator();
         while(tileIterator.hasNext()){
             Tile cur = tileIterator.next();
             cur.render(batch);
         }
 
-//
-//        badgeIterator = badges.iterator();
-//
-//        while(badgeIterator.hasNext()){
-//            Badge cur = badgeIterator.next();
-//            cur.draw(batch);
-//        }
 
 
         if (Gdx.input.justTouched()) {
@@ -323,16 +334,23 @@ public class PlayScreen implements Screen {
         stage.act();
         stage.draw();
         player.update(); // Update the bound
-        if (Intersector.overlaps(player.bounds, playCanvasRect)){
+        if (Intersector.overlaps(player.getBounds(), playCanvasRect)){
             // Once insigt use it to send OSC. But dont do it all the time
-            Gdx.app.log("OSC", "Hit.");
+//            Gdx.app.log("OSC", "Hit.");
         }
 
         for (int i = 0; i < numBadges; i ++){
             badges.get(i).setScale(1.f, 1.f);
         }
 
+        for (int i = 0; i < numBadges; i ++){
+            badges.get(i).update();
+            if (Intersector.overlaps(player.getBounds(), badges.get(i).getBounds())){
 
+                // Add a if submit statement here.
+                System.out.println("Hit Tree " + i);
+            }
+        }
     }
 
     @Override
